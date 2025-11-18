@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/client";
 import "../styles/Home.scss";
 import "../styles/signup.scss";
 
@@ -9,8 +10,7 @@ import "../styles/signup.scss";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
@@ -89,32 +89,19 @@ const SignUp = () => {
     setLoading(true);
     setError(null);
     try {
-      // Prepara payload conforme al DTO RegisterRequest del backend
+      // Allinea al backend: /api/auth/signup con {email,password,fullName}
       const payload = {
-        nome: nome.trim(),
-        cognome: cognome.trim(),
         email: email.trim().toLowerCase(),
-        riotId: riotId.trim(),
         password: password,
+        fullName: `${nome.trim()} ${cognome.trim()}`.trim(),
+        riotId: riotId.trim(),
+        region: region as any,
       };
-      // Chiama l'endpoint corretto: /api/auth/register
-      const res = await fetch("http://localhost:8080/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        if (res.status === 409)
-          throw new Error("Email or Riot ID already registered");
-        throw new Error("Registration failed");
-      }
-      // Il backend attuale risponde con testo semplice "Utente registrato con successo"
-      // In questo caso reindirizziamo l'utente alla pagina di login con un messaggio di successo
-      const msg = await res.text().catch(() => "");
-      const redirectTo = "/login";
-      navigate(redirectTo, { replace: true, state: { signupSuccess: msg || "Account creato, effettua il login." } });
+      await api.post("/api/auth/signup", payload);
+      navigate("/login", { replace: true, state: { signupSuccess: "Account creato, effettua il login." } });
     } catch (err: any) {
-      setError(err?.message ?? "Unexpected error");
+      const msg = err?.response?.data?.error || err?.message || "Unexpected error";
+      setError(msg);
     } finally {
       setLoading(false);
     }

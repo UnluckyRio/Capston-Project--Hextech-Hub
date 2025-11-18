@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/client";
 import "../styles/Home.scss";
 import "../styles/login.scss";
 
@@ -40,25 +41,15 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: identifier, password }),
-      });
-      if (!res.ok) {
-        if (res.status === 401) throw new Error("Invalid credentials");
-        if (res.status === 423) throw new Error("Account locked");
-        throw new Error("Authentication error");
-      }
-      const data = await res.json().catch(() => ({}));
-      const token: string | undefined = data.token ?? "demo-token";
+      const { data } = await api.post("/api/auth/login", { email: identifier, password });
+      const token: string | undefined = data?.token;
+      if (!token) throw new Error("Token mancante nella risposta");
       login(token, remember);
       const redirectTo = (location.state as any)?.from?.pathname ?? "/";
       navigate(redirectTo, { replace: true });
     } catch (err: any) {
-      setError(err?.message ?? "Unexpected error");
+      const msg = err?.response?.data?.error || err?.message || "Unexpected error";
+      setError(msg);
     } finally {
       setLoading(false);
     }

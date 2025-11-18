@@ -1,0 +1,71 @@
+{
+  "info": {
+    "name": "HextechHub API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Signup",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "http://localhost:8080/api/auth/signup", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","auth","signup"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"fullName\": \"User Test\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Auth Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "http://localhost:8080/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","auth","login"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Articles Public List",
+      "request": {
+        "method": "GET",
+        "url": {"raw": "http://localhost:8080/api/articles/public", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","articles","public"]}
+      }
+    },
+    {
+      "name": "Articles Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "http://localhost:8080/api/articles", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","articles"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Titolo\",\n  \"content\": \"Contenuto\",\n  \"published\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Articles Mine",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "url": {"raw": "http://localhost:8080/api/articles/mine", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","articles","mine"]}
+      }
+    }
+  ],
+  "variable": [
+    {"key": "token", "value": ""}
+  ]
+}

@@ -27,7 +27,7 @@ export default function Profile() {
 
   // Stato dati
   const [summoner, setSummoner] = useState<Summoner | null>(null);
-  const [matchIds, setMatchIds] = useState<string[]>([]);
+  // Rimuoviamo matchIds per evitare variabili inutilizzate
   const [matches, setMatches] = useState<MatchInfo[]>([]);
 
   // Stato UI
@@ -45,7 +45,7 @@ export default function Profile() {
     setLoading(true);
     setError(null);
     setSummoner(null);
-    setMatchIds([]);
+    // noop
     setMatches([]);
     try {
       // 1) Profilo
@@ -58,7 +58,6 @@ export default function Profile() {
       const idsRes = await fetch(`${API_BASE}/matches/by-puuid/${region}/${encodeURIComponent(summ.puuid)}?count=10`);
       if (!idsRes.ok) throw new Error(`Errore match IDs (${idsRes.status})`);
       const ids: string[] = await idsRes.json();
-      setMatchIds(ids);
 
       // 3) Dettagli partite in parallelo (max 10)
       const detailPromises = ids.map((id) => fetch(`${API_BASE}/match/${region}/${id}`).then((r) => {

@@ -1,0 +1,32 @@
+# Configurazione Spring Boot e DataSource caricata da variabili d'ambiente (.env)
+spring:
+  application:
+    name: hextech-hub-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate # Usa Flyway per migrazioni, valida lo schema esistente
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc.time_zone: UTC
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# Proprietà JWT
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000} # 1h in millisecondi
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN

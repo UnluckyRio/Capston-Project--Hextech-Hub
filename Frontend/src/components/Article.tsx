@@ -4,13 +4,16 @@ import { NavLink } from "react-router-dom";
 import "../styles/Article.scss";
 import { ARTICLES } from "../data/articles";
 import type { ArticleCategory } from "../data/articles";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 export type ArticleDto = {
   id: string;
   title: string;
-  category: string;
   excerpt: string;
   date: string;
+  authorEmail?: string;
+  category?: string; // opzionale: usato solo per UI
 };
 
 type ArticleState = {
@@ -67,48 +70,56 @@ export function articleReducer(
 }
 
 function validateArticleInput(
-  input: Pick<ArticleDto, "title" | "category" | "excerpt">
+  input: Pick<ArticleDto, "title" | "excerpt">
 ) {
   const errors: Partial<Record<keyof typeof input, string>> = {};
   if (!input.title?.trim()) errors.title = "Title is required";
   if (input.title && input.title.length > 255)
     errors.title = "Title too long (max 255)";
-  if (!input.category?.trim()) errors.category = "Category is required";
-  if (input.category && input.category.length > 255)
-    errors.category = "Category too long (max 255)";
   if (!input.excerpt?.trim()) errors.excerpt = "Excerpt is required";
   return errors;
 }
 
 async function postArticle(
-  input: Pick<ArticleDto, "title" | "category" | "excerpt">
+  input: Pick<ArticleDto, "title" | "excerpt">
 ): Promise<ArticleDto> {
-  const res = await fetch("http://localhost:8080/api/articles", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+  const { data } = await api.post("/api/articles", {
+    title: input.title,
+    content: input.excerpt,
+    published: true,
   });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Submit failed (${res.status}): ${text || res.statusText}`);
-  }
-
-  const data = (await res.json()) as ArticleDto;
-  return data;
+  const mapped: ArticleDto = {
+    id: String(data.id),
+    title: data.title,
+    excerpt: String(data.content ?? ""),
+    date: String(data.createdAt ?? new Date().toISOString()),
+    authorEmail: data.authorEmail,
+  };
+  return mapped;
 }
 
 async function fetchArticles(): Promise<ArticleDto[]> {
-  const res = await fetch("http://localhost:8080/api/articles");
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Fetch failed (${res.status}): ${text || res.statusText}`);
-  }
-  const data = (await res.json()) as ArticleDto[];
-  return data;
+  // Semplice caching in-memory per 60s
+  const now = Date.now();
+  const cacheKey = "articles_public_cache";
+  const cached = (window as any)[cacheKey] as { ts: number; items: ArticleDto[] } | undefined;
+  if (cached && now - cached.ts < 60000) return cached.items;
+
+  const { data } = await api.get("/api/articles/public");
+  const items: ArticleDto[] = (data as any[]).map((a) => ({
+    id: String(a.id),
+    title: String(a.title),
+    excerpt: String((a.content ?? "").slice(0, 240)),
+    date: String(a.createdAt ?? new Date().toISOString()),
+    authorEmail: a.authorEmail,
+  }));
+  (window as any)[cacheKey] = { ts: now, items };
+  return items;
 }
 
 export default function Article() {
   const [state, dispatch] = useReducer(articleReducer, initialArticleState);
+  const { isAuthenticated } = useAuth();
 
   const [title, setTitle] = useState("");
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
@@ -155,7 +166,7 @@ export default function Article() {
   const filtered = useMemo(() => {
     if (state.filter === "All") return state.items;
     return state.items.filter((a) =>
-      splitCategories(a.category).includes(state.filter)
+      a.category ? splitCategories(a.category).includes(state.filter as ArticleCategory) : true
     );
   }, [state.items, state.filter]);
 
@@ -168,14 +179,14 @@ export default function Article() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const categoryStr = categories.join(", ");
-    const input = { title, category: categoryStr, excerpt };
+    const input = { title, excerpt };
     const errors = validateArticleInput(input);
-    if (categories.length === 0) {
-      errors.category = "Select at least one category";
-    }
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
+    if (!isAuthenticated) {
+      dispatch({ type: "SUBMIT_ERROR", error: "Devi effettuare il login" });
+      return;
+    }
     dispatch({ type: "SUBMIT_START" });
     try {
       const created = await postArticle(input);
