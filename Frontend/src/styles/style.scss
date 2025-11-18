@@ -1,0 +1,22 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+$primary:#73ebfb;
+$secondary:#111244;
+$success:#f272e1;
+$info:#8f26ad;
+$warning:#bb9f69;
+$dark:#121212;
+$light:#eaeaea;
+$danger:#e3445d;
+
+$theme-colors:(
+  "primary": $primary,
+  "secondary": $secondary,
+  "success": $success,
+  "warning": $warning,
+  "danger": $danger,
+  "light": $light,
+  "dark": $dark,
+);

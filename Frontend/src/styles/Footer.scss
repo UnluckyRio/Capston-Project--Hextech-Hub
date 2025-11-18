@@ -1,0 +1,21 @@
+@import "./style.scss";
+
+.footer {
+  border-top: 0;
+  color: $light;
+  padding-block: clamp(0.4rem, 1.2vw, 0.6rem);
+
+  .container {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .handcrafted-text {
+    font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  }
+}

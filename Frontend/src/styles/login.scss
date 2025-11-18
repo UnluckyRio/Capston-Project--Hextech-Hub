@@ -1,0 +1,93 @@
+@import "./style.scss";
+
+// =============================
+// Login Page - Variables
+// =============================
+$login-max-width: 720px;
+$login-focus-ring: rgba($primary, 0.25);
+
+// =============================
+// Mixins
+// =============================
+@mixin focus-ring($color, $size: 3px) {
+  outline: none;
+  box-shadow: 0 0 0 $size $color;
+}
+
+@mixin surface-elevation($blur: 2px, $alpha: 0.35) {
+  backdrop-filter: saturate(120%) blur($blur);
+  -webkit-backdrop-filter: saturate(120%) blur($blur);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, $alpha);
+}
+
+// =============================
+// Page Root
+// =============================
+.login-page {
+  color: $light;
+
+  .container {
+    max-width: $login-max-width;
+  }
+
+  // =============================
+  // Form Controls
+  // =============================
+  .form-control {
+    background-color: rgba($secondary, 0.85);
+    color: $light;
+    border: 1px solid rgba($primary, 0.25);
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    transition: border-color 160ms ease, box-shadow 160ms ease,
+      background-color 160ms ease;
+
+    &::placeholder {
+      color: rgba($light, 0.6);
+    }
+
+    &:hover {
+      border-color: rgba($primary, 0.35);
+    }
+
+    &:focus {
+      @include focus-ring($login-focus-ring);
+      background-color: $secondary;
+      border-color: rgba($primary, 0.55);
+    }
+  }
+
+  // =============================
+  // Toggle Password Button
+  // =============================
+  .btn.btn-outline-primary {
+    border-radius: 12px;
+    border-color: rgba($primary, 0.35);
+    color: $primary;
+    &:hover,
+    &:focus {
+      border-color: rgba($primary, 0.55);
+    }
+    &:focus-visible {
+      @include focus-ring($login-focus-ring);
+    }
+  }
+
+  // =============================
+  // Actions Area
+  // =============================
+  .d-flex.gap-2 .btn {
+    border-width: 2px;
+  }
+
+  // =============================
+  // Alerts
+  // =============================
+  .alert-danger {
+    border-radius: 12px;
+    border: 1px solid rgba($danger, 0.35);
+    background-color: rgba($danger, 0.12);
+    color: $light;
+  }
+}
+

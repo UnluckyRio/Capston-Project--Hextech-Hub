@@ -1,0 +1,131 @@
+@import "./style.scss";
+
+// =============================
+// Signup Page - Variables
+// =============================
+$signup-max-width: 720px;
+$signup-focus-ring: rgba($primary, 0.25);
+
+// =============================
+// Mixins
+// =============================
+@mixin focus-ring($color, $size: 3px) {
+  outline: none;
+  box-shadow: 0 0 0 $size $color;
+}
+
+@mixin surface-elevation($blur: 2px, $alpha: 0.35) {
+  backdrop-filter: saturate(120%) blur($blur);
+  -webkit-backdrop-filter: saturate(120%) blur($blur);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, $alpha);
+}
+
+// =============================
+// Page Root
+// =============================
+.signup-page {
+  color: $light;
+
+  .container {
+    max-width: $signup-max-width;
+  }
+
+  // =============================
+  // Form Controls
+  // =============================
+  .form-control {
+    background-color: rgba($secondary, 0.85);
+    color: $light;
+    border: 1px solid rgba($primary, 0.25);
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    transition: border-color 160ms ease, box-shadow 160ms ease,
+      background-color 160ms ease;
+
+    &::placeholder {
+      color: rgba($light, 0.6);
+    }
+
+    &:hover {
+      border-color: rgba($primary, 0.35);
+    }
+
+    &:focus {
+      @include focus-ring($signup-focus-ring);
+      background-color: $secondary;
+      border-color: rgba($primary, 0.55);
+    }
+  }
+
+  // =============================
+  // Password Toggle Buttons
+  // =============================
+  .btn.btn-outline-primary {
+    border-radius: 12px;
+    border-color: rgba($primary, 0.35);
+    color: $primary;
+    &:hover,
+    &:focus {
+      border-color: rgba($primary, 0.55);
+    }
+    &:focus-visible {
+      @include focus-ring($signup-focus-ring);
+    }
+  }
+
+  // =============================
+  // Region Selector
+  // =============================
+  .region-select {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: clamp(0.4rem, 1.6vw, 0.6rem);
+    margin-bottom: 0.25rem;
+  }
+
+  .region-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid rgba($primary, 0.25);
+    background-color: rgba($secondary, 0.85);
+    color: $light;
+    width: 100%;
+    transition: border-color 160ms ease, box-shadow 160ms ease,
+      background-color 160ms ease, transform 120ms ease;
+
+    i {
+      font-size: 1.1rem;
+    }
+
+    &:hover {
+      border-color: rgba($primary, 0.45);
+      background-color: $secondary;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    &:focus-visible {
+      @include focus-ring($signup-focus-ring);
+    }
+
+    &.active {
+      border-color: rgba($primary, 0.65);
+      background-color: rgba($primary, 0.15);
+      color: $primary;
+    }
+  }
+
+  // =============================
+  // Alerts
+  // =============================
+  .alert-danger {
+    border-radius: 12px;
+    border: 1px solid rgba($danger, 0.35);
+    background-color: rgba($danger, 0.12);
+    color: $light;
+  }
+}
+
