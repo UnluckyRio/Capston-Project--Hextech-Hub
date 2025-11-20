@@ -1,71 +1,94 @@
 {
   "info": {
-    "name": "HextechHub API",
+    "name": "Hextech Hub Backend",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Auth Signup",
+      "name": "Auth - Signup",
       "request": {
         "method": "POST",
         "header": [
           {"key": "Content-Type", "value": "application/json"}
         ],
-        "url": {"raw": "http://localhost:8080/api/auth/signup", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","auth","signup"]},
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"fullName\": \"User Test\"\n}"
-        }
-      }
-    },
-    {
-      "name": "Auth Login",
-      "request": {
-        "method": "POST",
-        "header": [
-          {"key": "Content-Type", "value": "application/json"}
-        ],
-        "url": {"raw": "http://localhost:8080/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","auth","login"]},
+        "url": {"raw": "{{baseUrl}}/api/auth/signup", "host": ["{{baseUrl}}"], "path": ["api","auth","signup"]},
         "body": {
           "mode": "raw",
           "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
         }
-      }
+      },
+      "response": []
     },
     {
-      "name": "Articles Public List",
-      "request": {
-        "method": "GET",
-        "url": {"raw": "http://localhost:8080/api/articles/public", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","articles","public"]}
-      }
-    },
-    {
-      "name": "Articles Create",
+      "name": "Auth - Login",
       "request": {
         "method": "POST",
         "header": [
-          {"key": "Authorization", "value": "Bearer {{token}}"},
           {"key": "Content-Type", "value": "application/json"}
         ],
-        "url": {"raw": "http://localhost:8080/api/articles", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","articles"]},
+        "url": {"raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"]},
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Titolo\",\n  \"content\": \"Contenuto\",\n  \"published\": false\n}"
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
         }
-      }
+      },
+      "response": []
     },
     {
-      "name": "Articles Mine",
+      "name": "Articles - List",
       "request": {
         "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/api/articles", "host": ["{{baseUrl}}"], "path": ["api","articles"]}
+      },
+      "response": []
+    },
+    {
+      "name": "Articles - Create",
+      "request": {
+        "method": "POST",
         "header": [
-          {"key": "Authorization", "value": "Bearer {{token}}"}
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{jwtToken}}"}
         ],
-        "url": {"raw": "http://localhost:8080/api/articles/mine", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api","articles","mine"]}
-      }
+        "url": {"raw": "{{baseUrl}}/api/articles", "host": ["{{baseUrl}}"], "path": ["api","articles"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Titolo\",\n  \"content\": \"Contenuto...\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Articles - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{jwtToken}}"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/articles/1", "host": ["{{baseUrl}}"], "path": ["api","articles","1"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Nuovo titolo\",\n  \"content\": \"Nuovo contenuto...\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Articles - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{jwtToken}}"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/articles/1", "host": ["{{baseUrl}}"], "path": ["api","articles","1"]}
+      },
+      "response": []
     }
   ],
   "variable": [
-    {"key": "token", "value": ""}
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "jwtToken", "value": ""}
   ]
 }
