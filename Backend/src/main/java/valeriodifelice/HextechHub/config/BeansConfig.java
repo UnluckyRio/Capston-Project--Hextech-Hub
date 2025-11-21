@@ -56,46 +56,4 @@ public class BeansConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-    @Bean
-    public CommandLineRunner seedChampions(ChampionRepository repo) {
-        return args -> {
-            // Seed iniziale: inserisce alcuni campioni se il database è vuoto
-            if (repo.count() == 0) {
-                Champions a = new Champions();
-                a.setName("Ahri");
-                a.setRole("Mid");
-                a.setPickrate(0.12);
-                a.setWinrate(0.52);
-                a.setBanrate(0.18);
-                a.setMatches(10234);
-
-                Champions s = new Champions();
-                s.setName("Sett");
-                s.setRole("Top");
-                s.setPickrate(0.10);
-                s.setWinrate(0.51);
-                s.setBanrate(0.22);
-                s.setMatches(9345);
-
-                Champions j = new Champions();
-                j.setName("Jarvan IV");
-                j.setRole("Jungle");
-                j.setPickrate(0.08);
-                j.setWinrate(0.49);
-                j.setBanrate(0.05);
-                j.setMatches(8123);
-
-                Champions l = new Champions();
-                l.setName("Leona");
-                l.setRole("Support");
-                l.setPickrate(0.07);
-                l.setWinrate(0.53);
-                l.setBanrate(0.12);
-                l.setMatches(7560);
-
-                repo.saveAll(List.of(a, s, j, l));
-            }
-        };
-    }
 }
