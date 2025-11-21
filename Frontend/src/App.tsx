@@ -4,7 +4,6 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Champions from "./components/Champions";
 import ChampionDetail from "./components/ChampionDetail";
-import TierList from "./components/TierList";
 import Article from "./components/Article";
 import ArticleDetail from "./components/ArticleDetail";
 import Login from "./components/Login";
@@ -21,7 +20,6 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/Champions" element={<Champions />} />
         <Route path="/Champions/:id" element={<ChampionDetail />} />
-        <Route path="/tier-list" element={<TierList />} />
         <Route path="/Article" element={<Article />} />
         <Route path="/Article/:id" element={<ArticleDetail />} />
         <Route path="/login" element={<Login />} />

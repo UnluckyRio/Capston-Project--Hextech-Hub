@@ -116,7 +116,7 @@ const Navbar = ({ titleText = "HexTech Hub", onNavSelect }: NavbarProps) => {
             <i className="bi bi-person me-2" aria-hidden="true"></i>
             Profile
           </Nav.Link>
-          <Nav.Link as={NavLink} to="/tier-list">
+          <Nav.Link eventKey="link-2">
             <i className="bi bi-trophy me-2" aria-hidden="true"></i>
             Tier List
           </Nav.Link>

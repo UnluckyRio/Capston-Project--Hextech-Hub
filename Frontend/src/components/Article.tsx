@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import "../styles/Article.scss";
 import { ARTICLES } from "../data/articles";
 import type { ArticleCategory } from "../data/articles";
-import api, { apiGet } from "../api/client";
+import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
 export type ArticleDto = {
@@ -99,17 +99,21 @@ async function postArticle(
 }
 
 async function fetchArticles(): Promise<ArticleDto[]> {
-  const data = await apiGet<any[]>("/api/articles/public", undefined, {
-    cacheTTLms: 60000,
-    validate: (d: unknown): d is any[] => Array.isArray(d),
-  });
-  const items: ArticleDto[] = data.map((a) => ({
+  // Semplice caching in-memory per 60s
+  const now = Date.now();
+  const cacheKey = "articles_public_cache";
+  const cached = (window as any)[cacheKey] as { ts: number; items: ArticleDto[] } | undefined;
+  if (cached && now - cached.ts < 60000) return cached.items;
+
+  const { data } = await api.get("/api/articles/public");
+  const items: ArticleDto[] = (data as any[]).map((a) => ({
     id: String(a.id),
     title: String(a.title),
     excerpt: String((a.content ?? "").slice(0, 240)),
     date: String(a.createdAt ?? new Date().toISOString()),
     authorEmail: a.authorEmail,
   }));
+  (window as any)[cacheKey] = { ts: now, items };
   return items;
 }
 

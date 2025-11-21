@@ -8,7 +8,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: validate 
+      ddl-auto: validate # Usa Flyway per migrazioni, valida lo schema esistente
     properties:
       hibernate:
         format_sql: true

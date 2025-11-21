@@ -1,8 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Card from "react-bootstrap/Card";
 import "../styles/Home.scss";
 import LoadingOverlay from "./LoadingOverlay";
-import { apiGet } from "../api/client";
 
 // Versione DDragon per icone profilo
 const DDRAGON_VER = "15.22.1";
@@ -36,8 +35,7 @@ export default function Profile() {
   const [error, setError] = useState<string | null>(null);
 
   // Endpoint base backend
-  const API_BASE = useMemo(() => "/api/lol", []);
-  const abortRef = useRef<AbortController | null>(null);
+  const API_BASE = useMemo(() => "http://localhost:8080/api/lol", []);
 
   // Esegue la ricerca profilo e cronologia partite
   const handleSearch = async (e: React.FormEvent) => {
@@ -50,16 +48,22 @@ export default function Profile() {
     // noop
     setMatches([]);
     try {
-      if (abortRef.current) abortRef.current.abort();
-      abortRef.current = new AbortController();
-      const signal = abortRef.current.signal;
-
-      const summ = await apiGet<Summoner>(`${API_BASE}/summoner/by-name/${region}/${encodeURIComponent(name)}` , undefined, { signal });
+      // 1) Profilo
+      const summRes = await fetch(`${API_BASE}/summoner/by-name/${region}/${encodeURIComponent(name)}`);
+      if (!summRes.ok) throw new Error(`Errore profilo (${summRes.status})`);
+      const summ: Summoner = await summRes.json();
       setSummoner(summ);
 
-      const ids = await apiGet<string[]>(`${API_BASE}/matches/by-puuid/${region}/${encodeURIComponent(summ.puuid)}`, { count: 10 }, { signal });
+      // 2) Ultimi match IDs (limite 10)
+      const idsRes = await fetch(`${API_BASE}/matches/by-puuid/${region}/${encodeURIComponent(summ.puuid)}?count=10`);
+      if (!idsRes.ok) throw new Error(`Errore match IDs (${idsRes.status})`);
+      const ids: string[] = await idsRes.json();
 
-      const detailPromises = ids.map((id) => apiGet<any>(`${API_BASE}/match/${region}/${id}`, undefined, { signal }));
+      // 3) Dettagli partite in parallelo (max 10)
+      const detailPromises = ids.map((id) => fetch(`${API_BASE}/match/${region}/${id}`).then((r) => {
+        if (!r.ok) throw new Error(`Errore match ${id} (${r.status})`);
+        return r.json();
+      }));
       const details = await Promise.all(detailPromises);
       setMatches(details);
     } catch (err: any) {
